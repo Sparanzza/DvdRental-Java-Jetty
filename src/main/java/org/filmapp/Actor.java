@@ -1,11 +1,11 @@
-package org.example;
+package org.filmapp;
 
-public class User {
+public class Actor {
     private int id;
     private String firstName;
     private String lastName;
 
-    public User(){}
+    public Actor(){}
 
     public int getId() {
         return id;

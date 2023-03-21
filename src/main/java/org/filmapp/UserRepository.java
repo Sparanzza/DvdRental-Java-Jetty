@@ -1,4 +1,4 @@
-package org.example;
+package org.filmapp;
 
 import javax.inject.Inject;
 import java.sql.Connection;
@@ -24,8 +24,8 @@ public class UserRepository {
             if (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getInt("actor_id"));
-                user.setFirstName(resultSet.getString("first_name"));
-                user.setFirstName(resultSet.getString("last_name"));
+                user.setUserName(resultSet.getString("first_name"));
+                user.setPassword(resultSet.getString("last_name"));
                 return user;
             }
         } catch (SQLException e) {

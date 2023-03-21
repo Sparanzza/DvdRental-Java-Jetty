@@ -1,4 +1,4 @@
-package org.example;
+package org.filmapp;
 
 import javax.inject.Singleton;
 import java.sql.Connection;

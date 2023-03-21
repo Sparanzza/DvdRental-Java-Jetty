@@ -1,10 +1,9 @@
-package org.example;
+package org.filmapp;
 
 import dagger.Module;
 import dagger.Provides;
 
 import javax.inject.Singleton;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 @Module
