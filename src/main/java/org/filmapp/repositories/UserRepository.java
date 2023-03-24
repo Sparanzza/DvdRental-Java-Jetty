@@ -1,4 +1,7 @@
-package org.filmapp;
+package org.filmapp.repositories;
+
+import org.filmapp.DatabaseConnection;
+import org.filmapp.dto.User;
 
 import javax.inject.Inject;
 import java.sql.Connection;

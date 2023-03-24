@@ -1,6 +1,8 @@
 package org.filmapp;
 
 import dagger.Component;
+import org.filmapp.repositories.ActorRepository;
+import org.filmapp.repositories.UserRepository;
 
 import javax.inject.Singleton;
 

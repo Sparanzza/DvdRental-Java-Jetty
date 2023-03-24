@@ -1,4 +1,4 @@
-package org.filmapp;
+package org.filmapp.dto;
 
 public class Actor {
     private int id;

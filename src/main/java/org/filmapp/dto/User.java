@@ -1,4 +1,4 @@
-package org.filmapp;
+package org.filmapp.dto;
 
 public class User {
     private int id;
