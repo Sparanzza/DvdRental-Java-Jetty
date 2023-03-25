@@ -1,14 +1,16 @@
 package org.filmapp;
 
 import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.filmapp.dto.Actor;
-import org.filmapp.handler.ApiHandler;
-import org.filmapp.handler.AppHandler;
 import org.filmapp.repositories.ActorRepository;
+import org.filmapp.servlets.HelloServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +33,6 @@ public class App {
         System.out.println(actor);
 
         // Create Server Jetty
-
         // Create and configure a ThreadPool.
         QueuedThreadPool threadPool = new QueuedThreadPool();
         threadPool.setName("server");
@@ -51,18 +52,37 @@ public class App {
 
         // Create a ContextHandlerCollection to hold contexts.
         ContextHandlerCollection contextCollection = new ContextHandlerCollection();
-        server.setHandler(contextCollection);
+        // Create a HandlerList.
+        HandlerList handlerList = new HandlerList();
 
-        // Create a ContextHandler with contextPath.
-        ContextHandler appContext = new ContextHandler("/app");
-        appContext.setHandler(new AppHandler());
-        contextCollection.addHandler(appContext);
+        // Create a ServletContextHandler with contextPath.
+        ServletContextHandler servletContextApiHandler = new ServletContextHandler();
+        servletContextApiHandler.setContextPath("/api");
+        servletContextApiHandler.setDisplayName("api");
+        // Add the Servlet implementing the cart functionality to the context.
+        servletContextApiHandler.addServlet(HelloServlet.class, "/hello/*");
 
-        ContextHandler apiContext = new ContextHandler("/api");
-        apiContext.setHandler(new ApiHandler());
-        contextCollection.addHandler(apiContext);
 
-        contextCollection.deployHandler(apiContext, Callback.NOOP);
+        // Add as last a DefaultHandler.
+        DefaultHandler defaultHandler = new DefaultHandler();
+        handlerList.addHandler(contextCollection);
+        handlerList.addHandler(defaultHandler);
+
+
+        // Create a ServletContextHandler with contextPath.
+        ServletContextHandler servletContextHandler = new ServletContextHandler();
+        servletContextHandler.setContextPath("/");
+        servletContextHandler.setDisplayName("main");
+
+        // Add the DefaultServlet to serve static content.
+        ServletHolder servletHolder = servletContextHandler.addServlet(DefaultServlet.class, "/");
+        // Configure the DefaultServlet with init-parameters.
+        servletHolder.setInitParameter("resourceBase", "./src/main/webapp");
+        servletHolder.setAsyncSupported(true);
+
+        contextCollection.addHandler(servletContextApiHandler);
+        contextCollection.addHandler(servletContextHandler);
+        server.setHandler(handlerList);
 
         try {
             server.start(); // Start the Server it starts accepting connections from clients.
@@ -71,6 +91,5 @@ public class App {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 }
