@@ -1,11 +1,11 @@
 package org.filmapp.dto;
 
-public class Actor {
+public class ActorDto {
     private int id;
     private String firstName;
     private String lastName;
 
-    public Actor(){}
+    public ActorDto(){}
 
     public int getId() {
         return id;

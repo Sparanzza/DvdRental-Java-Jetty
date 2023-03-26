@@ -1,23 +1,25 @@
-package org.filmapp.repositories;
+package org.filmapp.service;
 
+import org.filmapp.dto.ActorDto;
 import org.filmapp.DatabaseConnection;
-import org.filmapp.dto.User;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-public class UserRepository {
+import java.util.Optional;
+@Singleton
+public class ActorService {
     private final Connection connection;
 
     @Inject
-    public UserRepository(DatabaseConnection databaseConnection) {
+    public ActorService(DatabaseConnection databaseConnection) {
         this.connection = databaseConnection.getConnection();
     }
 
-    public User getUserById(int id) {
+    public Optional<ActorDto> findById(int id) {
         try {
             String query = "SELECT actor_id, first_name, last_name FROM actor where actor_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
@@ -25,15 +27,16 @@ public class UserRepository {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getInt("actor_id"));
-                user.setUserName(resultSet.getString("first_name"));
-                user.setPassword(resultSet.getString("last_name"));
-                return user;
+                ActorDto actor = new ActorDto();
+                actor.setId(resultSet.getInt("actor_id"));
+                actor.setFirstName(resultSet.getString("first_name"));
+                actor.setFirstName(resultSet.getString("last_name"));
+                return Optional.of(actor);
+            } else {
+                return Optional.empty();
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener el usuario", e);
         }
-        return null;
     }
 }

@@ -1,7 +1,7 @@
-package org.filmapp.repositories;
+package org.filmapp.service;
 
-import org.filmapp.dto.Actor;
 import org.filmapp.DatabaseConnection;
+import org.filmapp.dto.UserDto;
 
 import javax.inject.Inject;
 import java.sql.Connection;
@@ -9,15 +9,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ActorRepository {
+public class UserRepository {
     private final Connection connection;
 
     @Inject
-    public ActorRepository(DatabaseConnection databaseConnection) {
+    public UserRepository(DatabaseConnection databaseConnection) {
         this.connection = databaseConnection.getConnection();
     }
 
-    public Actor getActorById(int id) {
+    public UserDto getUserById(int id) {
         try {
             String query = "SELECT actor_id, first_name, last_name FROM actor where actor_id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
@@ -25,11 +25,11 @@ public class ActorRepository {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                Actor actor = new Actor();
-                actor.setId(resultSet.getInt("actor_id"));
-                actor.setFirstName(resultSet.getString("first_name"));
-                actor.setFirstName(resultSet.getString("last_name"));
-                return actor;
+                UserDto user = new UserDto();
+                user.setId(resultSet.getInt("actor_id"));
+                user.setUserName(resultSet.getString("first_name"));
+                user.setPassword(resultSet.getString("last_name"));
+                return user;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener el usuario", e);

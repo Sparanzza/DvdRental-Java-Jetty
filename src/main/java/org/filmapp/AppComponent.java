@@ -1,8 +1,8 @@
 package org.filmapp;
 
 import dagger.Component;
-import org.filmapp.repositories.ActorRepository;
-import org.filmapp.repositories.UserRepository;
+import org.filmapp.service.ActorService;
+import org.filmapp.service.UserRepository;
 
 import javax.inject.Singleton;
 
@@ -10,5 +10,5 @@ import javax.inject.Singleton;
 @Component(modules = {DatabaseModule.class})
 public interface AppComponent {
     UserRepository getUserRepository();
-    ActorRepository getActorRepository();
+    ActorService getActorService();
 }

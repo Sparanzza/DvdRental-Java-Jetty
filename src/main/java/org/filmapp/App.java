@@ -8,11 +8,13 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.filmapp.dto.Actor;
-import org.filmapp.repositories.ActorRepository;
-import org.filmapp.servlets.HelloServlet;
+import org.filmapp.api.ActorController;
+import org.filmapp.dto.ActorDto;
+import org.filmapp.service.ActorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 public class App {
     private static final Logger L = LoggerFactory.getLogger(App.class);
@@ -28,8 +30,8 @@ public class App {
 
         AppComponent appComponent = DaggerAppComponent.builder().databaseModule(databaseModule).build();
 
-        ActorRepository actorRepository = appComponent.getActorRepository();
-        Actor actor = actorRepository.getActorById(1);
+        ActorService actorService = appComponent.getActorService();
+        Optional<ActorDto> actor = actorService.findById(1);
         System.out.println(actor);
 
         // Create Server Jetty
@@ -60,7 +62,7 @@ public class App {
         servletContextApiHandler.setContextPath("/api");
         servletContextApiHandler.setDisplayName("api");
         // Add the Servlet implementing the cart functionality to the context.
-        servletContextApiHandler.addServlet(HelloServlet.class, "/hello/*");
+        servletContextApiHandler.addServlet(ActorController.class, "/actor/*");
 
 
         // Add as last a DefaultHandler.
