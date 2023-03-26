@@ -8,8 +8,9 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.filmapp.api.ActorController;
 import org.filmapp.dto.ActorDto;
+import org.filmapp.modules.DatabaseModule;
+import org.filmapp.modules.ServletModule;
 import org.filmapp.service.ActorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,11 @@ public class App {
 
         DatabaseModule databaseModule = new DatabaseModule(url, username, password);
 
-        AppComponent appComponent = DaggerAppComponent.builder().databaseModule(databaseModule).build();
+        AppComponent appComponent = DaggerAppComponent.builder()
+                .servletModule(new ServletModule("/api"))
+                .databaseModule(databaseModule).build();
+
+        ServletContextHandler servletContextApiHandler = appComponent.provideServletContextHandler();
 
         ActorService actorService = appComponent.getActorService();
         Optional<ActorDto> actor = actorService.findById(1);
@@ -49,21 +54,13 @@ public class App {
 
         // Add the HttpChannel.Listener as bean to the connector.
         connector.addBean(new TimingHttpChannelListener());
-        connector.setPort(8080);                                                                // Create the ServerConnector.
-        server.addConnector(connector);                                                         // Add the Connector to the Server
+        connector.setPort(8080);
+        server.addConnector(connector);
 
         // Create a ContextHandlerCollection to hold contexts.
         ContextHandlerCollection contextCollection = new ContextHandlerCollection();
         // Create a HandlerList.
         HandlerList handlerList = new HandlerList();
-
-        // Create a ServletContextHandler with contextPath.
-        ServletContextHandler servletContextApiHandler = new ServletContextHandler();
-        servletContextApiHandler.setContextPath("/api");
-        servletContextApiHandler.setDisplayName("api");
-        // Add the Servlet implementing the cart functionality to the context.
-        servletContextApiHandler.addServlet(ActorController.class, "/actor/*");
-
 
         // Add as last a DefaultHandler.
         DefaultHandler defaultHandler = new DefaultHandler();

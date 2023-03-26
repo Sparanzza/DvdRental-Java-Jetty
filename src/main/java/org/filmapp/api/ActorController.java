@@ -16,14 +16,15 @@ import java.util.Optional;
 import static java.lang.System.Logger.Level.INFO;
 
 public class ActorController extends HttpServlet {
-    @Inject public ActorService actorService;
+    public ActorService actorService;
     private final Gson gson;
 
-    public ActorController() {
+    public ActorController(ActorService actorService) {
         this.gson = new Gson()
 ;        if (actorService == null) {
             System.getLogger("timing").log(INFO, "ActorService is null");
         }
+        this.actorService = actorService;
     }
 
     @Override

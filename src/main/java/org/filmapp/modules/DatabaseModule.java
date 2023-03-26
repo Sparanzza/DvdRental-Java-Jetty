@@ -1,7 +1,8 @@
-package org.filmapp;
+package org.filmapp.modules;
 
 import dagger.Module;
 import dagger.Provides;
+import org.filmapp.DatabaseConnection;
 
 import javax.inject.Singleton;
 import java.sql.SQLException;
