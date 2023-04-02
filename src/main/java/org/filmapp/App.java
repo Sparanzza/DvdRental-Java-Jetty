@@ -1,21 +1,18 @@
 package org.filmapp;
 
-import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.filmapp.dto.ActorDto;
+import org.filmapp.app.AppComponent;
+import org.filmapp.app.DaggerAppComponent;
 import org.filmapp.modules.DatabaseModule;
 import org.filmapp.modules.ServletModule;
-import org.filmapp.service.ActorService;
+import org.filmapp.server.JettyServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class App {
     private static final Logger L = LoggerFactory.getLogger(App.class);
@@ -34,28 +31,6 @@ public class App {
                 .databaseModule(databaseModule).build();
 
         ServletContextHandler servletContextApiHandler = appComponent.provideServletContextHandler();
-
-        ActorService actorService = appComponent.getActorService();
-        Optional<ActorDto> actor = actorService.findById(1);
-        System.out.println(actor);
-
-        // Create Server Jetty
-        // Create and configure a ThreadPool.
-        QueuedThreadPool threadPool = new QueuedThreadPool();
-        threadPool.setName("server");
-
-        Server server = new Server(threadPool); // Create a Server instance.
-        HttpConfiguration httpConfig = new HttpConfiguration(); // The HTTP configuration object.
-        httpConfig.setSendServerVersion(true); // Configure the HTTP support
-
-        HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);                   // The ConnectionFactory for HTTP/1.1.
-        ProxyConnectionFactory proxy = new ProxyConnectionFactory(http11.getProtocol());        // The ConnectionFactory for the PROXY protocol.
-        ServerConnector connector = new ServerConnector(server, proxy, http11);                 // Create a ServerConnector to accept connections from clients.
-
-        // Add the HttpChannel.Listener as bean to the connector.
-        connector.addBean(new TimingHttpChannelListener());
-        connector.setPort(8080);
-        server.addConnector(connector);
 
         // Create a ContextHandlerCollection to hold contexts.
         ContextHandlerCollection contextCollection = new ContextHandlerCollection();
@@ -81,14 +56,10 @@ public class App {
 
         contextCollection.addHandler(servletContextApiHandler);
         contextCollection.addHandler(servletContextHandler);
-        server.setHandler(handlerList);
 
-        try {
-            server.start(); // Start the Server it starts accepting connections from clients.
-            // server.join(); // Keep the main thread alive while the server is running.
-            System.out.println("Started Jetty Server!");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        var server = new JettyServer(8080);
+        server.setHandler(handlerList);
+        server.start();
+
     }
 }

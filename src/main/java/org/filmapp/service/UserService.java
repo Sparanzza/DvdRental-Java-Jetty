@@ -8,32 +8,32 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
-public class UserRepository {
+public class UserService {
     private final Connection connection;
 
     @Inject
-    public UserRepository(DatabaseConnection databaseConnection) {
+    public UserService(DatabaseConnection databaseConnection) {
         this.connection = databaseConnection.getConnection();
     }
 
-    public UserDto getUserById(int id) {
+    public Optional<UserDto> findById(int id) {
         try {
-            String query = "SELECT actor_id, first_name, last_name FROM actor where actor_id = ?";
+            String query = "SELECT * FROM users where id = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 UserDto user = new UserDto();
-                user.setId(resultSet.getInt("actor_id"));
-                user.setUserName(resultSet.getString("first_name"));
-                user.setPassword(resultSet.getString("last_name"));
-                return user;
-            }
+                user.setId(resultSet.getInt("id"));
+                user.setUserName(resultSet.getString("username"));
+                user.setPassword(resultSet.getString("password"));
+                return Optional.of(user);
+            }else return Optional.empty();
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener el usuario", e);
+            throw new RuntimeException("Error getting user", e);
         }
-        return null;
     }
 }

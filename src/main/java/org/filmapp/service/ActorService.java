@@ -1,7 +1,7 @@
 package org.filmapp.service;
 
-import org.filmapp.dto.ActorDto;
 import org.filmapp.DatabaseConnection;
+import org.filmapp.dto.ActorDto;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,7 +36,7 @@ public class ActorService {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener el usuario", e);
+            throw new RuntimeException("Error getting Actor", e);
         }
     }
 }
